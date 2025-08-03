@@ -495,14 +495,15 @@
                     <p>টেলিগ্রাম টাস্ক সম্পূর্ণ করে অতিরিক্ত টাকা আয় করুন।</p>
                 </div>
                 
-                <p style="margin-top: 20px; color: #fff;">এখানে কোনো টাস্ক নেই। পরে আবার দেখুন!</p>
-                
+                <div style="margin-top: 20px;">
+                    <p style="font-size: 1.1em; margin-bottom: 10px; color: #fff;">আমাদের ইউটিউব চ্যানেলে সাবস্ক্রাইব করুন এবং ১০ টাকা ফ্রি পান!</p>
+                    <button class="btn" onclick="window.open('https://youtube.com/@takaincome-w7z?si=Ycg1W6y7sTvnjpNn', '_blank')">চ্যানেলে সাবস্ক্রাইব করুন</button>
+                    <button class="btn" onclick="verifyYouTube()" id="youtube-verify-btn">সাবস্ক্রিপশন যাচাই (+10 টাকা)</button>
+                </div>
+
                 <div style="margin-top: 30px;">
                     <p style="font-size: 1.1em; margin-bottom: 10px; color: #fff;">আমাদের টেলিগ্রাম চ্যানেলে যোগ দিন এবং ১০ টাকা ফ্রি পান!</p>
                     <button class="btn" onclick="window.open('https://t.me/takaincome8353', '_blank')">চ্যানেলে যোগ দিন</button>
-                </div>
-                
-                <div style="margin-top: 30px;">
                     <button class="btn" onclick="verifyTelegram()" id="verify-btn">যোগদানের যাচাই (+10 টাকা)</button>
                 </div>
             </div>
@@ -686,7 +687,8 @@
             referrals: 0, 
             lastCheckin: null,
             lastTaskTime: null,
-            telegramVerified: false
+            telegramVerified: false,
+            youtubeVerified: false
         };
         
         // Constants for limits and rewards
@@ -697,8 +699,9 @@
         const MIN_WITHDRAWAL = 600;
         const REQUIRED_REFERRALS = 6;
         
-        // Telegram channel configuration (for informational purposes)
+        // Channel links
         const TELEGRAM_CHANNEL_LINK = "https://t.me/takaincome8353";
+        const YOUTUBE_CHANNEL_LINK = "https://youtube.com/@takaincome-w7z?si=Ycg1W6y7sTvnjpNn";
 
         // Initialize the app
         function initApp() {
@@ -716,7 +719,8 @@
             }
             
             checkTaskAvailability();
-            updateReferralWarning(); 
+            updateReferralWarning();
+            updateTelegramAndYouTubeButtons();
         }
         
         // Generate a unique user ID
@@ -772,7 +776,10 @@
             const navItems = document.querySelectorAll('.nav-item');
             if (screenId === 'home-screen') navItems[0].classList.add('active');
             else if (screenId === 'ads-screen') navItems[1].classList.add('active');
-            else if (screenId === 'tg-screen') navItems[2].classList.add('active');
+            else if (screenId === 'tg-screen') {
+                navItems[2].classList.add('active');
+                updateTelegramAndYouTubeButtons();
+            }
             else if (screenId === 'withdraw-screen') {
                 navItems[3].classList.add('active');
                 updateReferralWarning(); 
@@ -927,6 +934,32 @@
             alert(`দৈনিক পুরস্কার দাবি করা হয়েছে! আপনি ${DAILY_CHECKIN_REWARD} টাকা আয় করেছেন।`);
         }
         
+        // Update Telegram and YouTube button states
+        function updateTelegramAndYouTubeButtons() {
+            const tgVerifyBtn = document.getElementById('verify-btn');
+            const ytVerifyBtn = document.getElementById('youtube-verify-btn');
+
+            if (tgVerifyBtn) {
+                if (userData.telegramVerified) {
+                    tgVerifyBtn.disabled = true;
+                    tgVerifyBtn.textContent = 'ইতিমধ্যে যাচাই করা হয়েছে';
+                } else {
+                    tgVerifyBtn.disabled = false;
+                    tgVerifyBtn.textContent = 'যোগদানের যাচাই (+10 টাকা)';
+                }
+            }
+            
+            if (ytVerifyBtn) {
+                if (userData.youtubeVerified) {
+                    ytVerifyBtn.disabled = true;
+                    ytVerifyBtn.textContent = 'ইতিমধ্যে যাচাই করা হয়েছে';
+                } else {
+                    ytVerifyBtn.disabled = false;
+                    ytVerifyBtn.textContent = 'সাবস্ক্রিপশন যাচাই (+10 টাকা)';
+                }
+            }
+        }
+
         // Verify Telegram join
         function verifyTelegram() {
             if (userData.telegramVerified) {
@@ -940,11 +973,27 @@
             
             updateAll();
             saveUserData();
-            
-            document.getElementById('verify-btn').disabled = true;
-            document.getElementById('verify-btn').textContent = 'ইতিমধ্যে যাচাই করা হয়েছে';
+            updateTelegramAndYouTubeButtons();
             
             alert('টেলিগ্রাম যোগদান যাচাই করা হয়েছে! আপনি ১০ টাকা আয় করেছেন।');
+        }
+
+        // Verify YouTube subscription
+        function verifyYouTube() {
+            if (userData.youtubeVerified) {
+                alert('আপনি ইতিমধ্যে আপনার ইউটিউব সাবস্ক্রিপশন যাচাই করেছেন।');
+                return;
+            }
+            
+            userData.balance += 10; // YouTube subscription reward
+            userData.totalEarnings += 10;
+            userData.youtubeVerified = true;
+            
+            updateAll();
+            saveUserData();
+            updateTelegramAndYouTubeButtons();
+
+            alert('ইউটিউব সাবস্ক্রিপশন যাচাই করা হয়েছে! আপনি ১০ টাকা আয় করেছেন।');
         }
 
         function updateReferralWarning() {
