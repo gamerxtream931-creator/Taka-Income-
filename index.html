@@ -174,6 +174,47 @@
             cursor: not-allowed;
             transform: none;
         }
+        
+        /* New Funky Task Card */
+        .funky-task-card {
+            background: linear-gradient(45deg, #3f2b96, #a8c0ff);
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border: 3px solid #feca57;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .funky-task-card::before {
+            content: '🔥 নতুন টাস্ক 🔥';
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-5deg);
+            background-color: #ff6b6b;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 10px;
+            font-size: 0.8em;
+            font-weight: 700;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .funky-task-card h3 {
+            font-size: 1.4em;
+            color: #feca57;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .funky-task-card p {
+            font-size: 1em;
+            color: #fff;
+            margin-bottom: 20px;
+        }
 
         /* Stats Grid - Funky */
         .stats-grid {
@@ -506,6 +547,13 @@
                     <button class="btn" onclick="window.open('https://t.me/takaincome8353', '_blank')">চ্যানেলে যোগ দিন</button>
                     <button class="btn" onclick="verifyTelegram()" id="verify-btn">যোগদানের যাচাই (+10 টাকা)</button>
                 </div>
+
+                <div class="funky-task-card">
+                    <h3>এই টাস্কটি মিস করবেন না!</h3>
+                    <p>টেলিগ্রাম গেমফাই গ্রুপে যোগ দিন এবং ৫ টাকা বোনাস পান!</p>
+                    <button class="btn" style="margin-top: 0; margin-bottom: 15px; border-color: #3f2b96; background: linear-gradient(90deg, #feca57, #ff6b6b);" onclick="window.open('https://t.me/IMPGameFiBot/gamefi?startapp=c3JjPXNjZW5lMSZpYz1aalV5TUdZPQ%3D%3D', '_blank')">গ্রুপে যোগ দিন</button>
+                    <button class="btn" style="margin: 0; border-color: #3f2b96; background: linear-gradient(90deg, #feca57, #ff6b6b);" onclick="verifyGameFi()" id="gamefi-verify-btn">যাচাই করুন (+5 টাকা)</button>
+                </div>
             </div>
         </div>
         
@@ -688,7 +736,8 @@
             lastCheckin: null,
             lastTaskTime: null,
             telegramVerified: false,
-            youtubeVerified: false
+            youtubeVerified: false,
+            isGameFiVerified: false // NEW FIELD
         };
         
         // Constants for limits and rewards
@@ -702,6 +751,7 @@
         // Channel links
         const TELEGRAM_CHANNEL_LINK = "https://t.me/takaincome8353";
         const YOUTUBE_CHANNEL_LINK = "https://youtube.com/@takaincome-w7z?si=Ycg1W6y7sTvnjpNn";
+        const GAMEFI_LINK = "https://t.me/IMPGameFiBot/gamefi?startapp=c3JjPXNjZW5lMSZpYz1aalV5TUdZPQ%3D%3D";
 
         // Initialize the app
         function initApp() {
@@ -938,6 +988,7 @@
         function updateTelegramAndYouTubeButtons() {
             const tgVerifyBtn = document.getElementById('verify-btn');
             const ytVerifyBtn = document.getElementById('youtube-verify-btn');
+            const gamefiVerifyBtn = document.getElementById('gamefi-verify-btn');
 
             if (tgVerifyBtn) {
                 if (userData.telegramVerified) {
@@ -956,6 +1007,16 @@
                 } else {
                     ytVerifyBtn.disabled = false;
                     ytVerifyBtn.textContent = 'সাবস্ক্রিপশন যাচাই (+10 টাকা)';
+                }
+            }
+
+            if (gamefiVerifyBtn) {
+                if (userData.isGameFiVerified) {
+                    gamefiVerifyBtn.disabled = true;
+                    gamefiVerifyBtn.textContent = 'ইতিমধ্যে যাচাই করা হয়েছে';
+                } else {
+                    gamefiVerifyBtn.disabled = false;
+                    gamefiVerifyBtn.textContent = 'যাচাই করুন (+5 টাকা)';
                 }
             }
         }
@@ -994,6 +1055,24 @@
             updateTelegramAndYouTubeButtons();
 
             alert('ইউটিউব সাবস্ক্রিপশন যাচাই করা হয়েছে! আপনি ১০ টাকা আয় করেছেন।');
+        }
+
+        // Verify GameFi join - NEW FUNCTION
+        function verifyGameFi() {
+            if (userData.isGameFiVerified) {
+                alert('আপনি ইতিমধ্যে এই টাস্কটি সম্পূর্ণ করেছেন।');
+                return;
+            }
+            
+            userData.balance += 5; // GameFi join reward
+            userData.totalEarnings += 5;
+            userData.isGameFiVerified = true;
+            
+            updateAll();
+            saveUserData();
+            updateTelegramAndYouTubeButtons();
+
+            alert('গেমফাই গ্রুপে যোগদানের যাচাই করা হয়েছে! আপনি ৫ টাকা আয় করেছেন।');
         }
 
         function updateReferralWarning() {
